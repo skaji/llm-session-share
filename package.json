@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch server/src/node.ts",
+    "dev": "PORT=${PORT:-8789} tsx watch server/src/node.ts",
     "build": "esbuild server/src/node.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/node.js",
     "start": "node dist/node.js",
     "check": "tsc --noEmit",

@@ -18,8 +18,9 @@ npm ci
 npm run dev
 ```
 
-The server listens at `http://localhost:8080` and saves data under `.data/`.
-Use that URL with the CLI's `-server` option. Stop the server with Ctrl-C;
+The server listens at `http://localhost:8789` and saves data under `.data/`.
+Use that URL with the CLI's `-server` option. Override the development port with
+`PORT=9000 npm run dev`. Stop the server with Ctrl-C;
 saved sessions remain on disk.
 
 | Environment | Storage | Run |
@@ -35,7 +36,7 @@ Node server settings:
 | `STORAGE` | `local` | `local` or `gcs` |
 | `DATA_DIR` | `.data` | Local storage root |
 | `GCS_BUCKET` | None | Required with `STORAGE=gcs`; bucket name only |
-| `PORT` | `8080` | Listening port |
+| `PORT` | `8789` with `npm run dev`; otherwise `8080` | Listening port |
 | `HOST` | `0.0.0.0` | Listening address |
 
 ## GCP (primary deployment)
