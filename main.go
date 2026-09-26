@@ -13,7 +13,11 @@ import (
 	"github.com/skaji/llm-session-share/internal/share"
 )
 
+var version = "dev"
+
 func main() {
+	var showVersion bool
+	flag.BoolVar(&showVersion, "version", false, "print version and exit")
 	var opts share.Options
 	flag.StringVar(&opts.Server, "server", os.Getenv("LLM_SESSION_SHARE_URL"), "server URL (or LLM_SESSION_SHARE_URL)")
 	flag.StringVar(&opts.Name, "user", os.Getenv("LLM_SESSION_SHARE_USER"), "display name (or LLM_SESSION_SHARE_USER)")
@@ -27,6 +31,10 @@ func main() {
 		flag.PrintDefaults()
 	}
 	flag.Parse()
+	if showVersion {
+		fmt.Println("llm-session-share " + version)
+		return
+	}
 	if flag.NArg() != 1 {
 		flag.Usage()
 		os.Exit(2)

@@ -101,6 +101,7 @@ publish the session again, so stop it first.
 | `-server` | `LLM_SESSION_SHARE_URL` | Sharing server URL |
 | `-user` | `LLM_SESSION_SHARE_USER` | Your display name; required for uploads |
 | `-cloudflare-access` | `false` | Read your login token using `cloudflared` |
+| `-version` | — | Print version and exit; no session or server required |
 | `-once` | `false` | Upload once and exit |
 | `-delete` | `false` | Delete the server copy and exit |
 | `-source` | `auto` | Override format detection with `codex` or `claude` |
