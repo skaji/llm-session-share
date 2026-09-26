@@ -1,0 +1,36 @@
+version: 2
+project_name: llm-session-share
+
+builds:
+  - main: .
+    binary: llm-session-share
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w
+    flags:
+      - -trimpath
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - formats: ["tar.gz"]
+    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}"
+    files:
+      - README.md
+      - LICENSE
+      - docs/*.md
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"

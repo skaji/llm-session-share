@@ -1,0 +1,9 @@
+.git
+node_modules
+dist
+work
+.data
+.wrangler
+.env
+.dev.vars
+llm-session-share

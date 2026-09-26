@@ -1,0 +1,8 @@
+/llm-session-share
+/node_modules/
+/dist/
+/.data/
+/.wrangler/
+/work/
+.env
+.dev.vars

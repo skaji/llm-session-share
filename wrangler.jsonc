@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "llm-session-share",
+  "main": "server/src/worker.ts",
+  "compatibility_date": "2026-09-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "r2_buckets": [
+    { "binding": "BUCKET", "bucket_name": "replace-with-your-bucket" }
+  ]
+}
