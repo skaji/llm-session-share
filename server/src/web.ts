@@ -33,7 +33,7 @@ export const css = `
 :root { color-scheme: light; font-family: ui-sans-serif, system-ui, sans-serif; color: #20201e; background: #fff; }
 * { box-sizing: border-box; }
 body { margin: 0; }
-main { width: min(1120px, calc(100% - 64px)); margin: 0 auto; padding: 26px 0 72px; }
+main { width: 100%; max-width: 1028px; margin: 0 auto; padding: 26px 24px 72px; }
 a { color: #2056ab; text-decoration: none; }
 a:hover { text-decoration: underline; }
 .masthead { display: flex; justify-content: space-between; gap: 16px; padding-bottom: 22px; margin-bottom: 34px; border-bottom: 1px solid #dde3eb; font-size: 14px; }
@@ -90,8 +90,14 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid 
 #welcome { max-width: 760px; margin: 60px auto; }
 .example { white-space: pre-wrap; overflow-wrap: anywhere; padding: 16px; background: #f6f7f9; border-radius: 6px; font-size: 13px; line-height: 1.7; }
 [hidden] { display: none !important; }
+@media (max-width: 700px) {
+  main { padding-left: 16px; padding-right: 16px; }
+}
+@media (max-width: 340px) {
+  main { padding-left: 12px; padding-right: 12px; }
+}
 @media (max-width: 640px) {
-  main { width: calc(100% - 32px); padding-top: 20px; }
+  main { padding-top: 20px; }
   .masthead { margin-bottom: 26px; }
   .masthead span { display: none; }
   #welcome h1, .heading h1 { font-size: 21px; }
