@@ -43,11 +43,13 @@ llm-session-share /path/to/session.jsonl
 
 ## Choose a session
 
-You can pass a JSONL file or a session link. Put all options before that argument.
+You can pass a JSONL file, a Zstandard-compressed `.jsonl.zst` file, or a session link.
+Put all options before that argument.
 For example, with the environment variables above set:
 
 ```sh
 llm-session-share /path/to/session.jsonl
+llm-session-share /path/to/session.jsonl.zst
 llm-session-share 'codex://threads/01a0de4a-2245-7102-b715-58d2ab09ea8f'
 llm-session-share 'claude://resume?session=01a0de4a-2245-7102-b715-58d2ab09ea8f'
 ```
@@ -60,6 +62,8 @@ specify the JSONL path directly.
 | --- | --- | --- |
 | Codex | `sessions/YYYY/MM/DD/rollout-…-<uuid>.jsonl` or `archived_sessions/…` | `$CODEX_HOME`, default `~/.codex` |
 | Claude Code | `projects/<project>/<uuid>.jsonl` | `$CLAUDE_CONFIG_DIR`, default `~/.claude` |
+
+Link lookup also recognizes `.jsonl.zst` files for both sources.
 
 Codex titles come from `<home>/session_index.jsonl` only when the selected file
 is under `<home>/sessions/` or `<home>/archived_sessions/`. Claude titles come
@@ -124,7 +128,8 @@ rendered. Images and local file attachments are not uploaded.
 The CLI extracts user and assistant text, including assistant progress messages,
 using the filtering rules from
 [llm-session-search](https://github.com/skaji/llm-session-search). It excludes tool
-calls/results, reasoning, and recognized injected context. It uploads the text,
+calls/results, reasoning, and recognized injected context, including Codex's
+`external_codex_apps_open_page` messages. It uploads the text,
 message timestamps, session ID, source, display name, and title. It does not
 upload the original JSONL or separately attach local files. Paths or other
 information written in conversation text remain part of that text.

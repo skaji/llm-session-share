@@ -27,7 +27,7 @@ func main() {
 	flag.BoolVar(&opts.Delete, "delete", false, "delete the shared session and exit; keep the local JSONL")
 	flag.BoolVar(&opts.CloudflareAccess, "cloudflare-access", false, "read a user token with cloudflared access token --app <server-url> before uploads")
 	flag.Usage = func() {
-		_, _ = fmt.Fprintln(flag.CommandLine.Output(), "Usage: llm-session-share [options] <session.jsonl | codex://threads/UUID | claude://resume?session=UUID>\n\nShare user and assistant messages; watch for updates until interrupted.\nCodex links search $CODEX_HOME (default ~/.codex) for the local JSONL.\nClaude links search $CLAUDE_CONFIG_DIR (default ~/.claude) under projects.\nFor Codex paths under <home>/sessions or <home>/archived_sessions,\nalso read <home>/session_index.jsonl for the title.")
+		_, _ = fmt.Fprintln(flag.CommandLine.Output(), "Usage: llm-session-share [options] <session.jsonl | session.jsonl.zst | codex://threads/UUID | claude://resume?session=UUID>\n\nShare user and assistant messages; watch for updates until interrupted.\nCodex links search $CODEX_HOME (default ~/.codex) for the local JSONL or JSONL.zst.\nClaude links search $CLAUDE_CONFIG_DIR (default ~/.claude) under projects.\nFor Codex paths under <home>/sessions or <home>/archived_sessions,\nalso read <home>/session_index.jsonl for the title.")
 		flag.PrintDefaults()
 	}
 	flag.Parse()

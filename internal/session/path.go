@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-// ResolvePath accepts a JSONL path or a local Codex/Claude session link.
+// ResolvePath accepts a JSONL or JSONL.zst path or a local Codex/Claude session link.
 func ResolvePath(input string) (string, error) {
 	if strings.HasPrefix(input, "claude:") {
 		return resolveClaudePath(input)
@@ -41,6 +41,7 @@ func ResolvePath(input string) (string, error) {
 				return err
 			}
 			name := strings.ToLower(entry.Name())
+			name = strings.TrimSuffix(name, ".zst")
 			if entry.Type().IsRegular() && strings.HasPrefix(name, "rollout-") && strings.HasSuffix(name, "-"+id+".jsonl") {
 				matches = append(matches, path)
 			}
@@ -92,7 +93,8 @@ func resolveClaudePath(input string) (string, error) {
 			return "", err
 		}
 		for _, entry := range entries {
-			if entry.Type().IsRegular() && strings.EqualFold(entry.Name(), id+".jsonl") {
+			name := strings.TrimSuffix(strings.ToLower(entry.Name()), ".zst")
+			if entry.Type().IsRegular() && name == id+".jsonl" {
 				matches = append(matches, filepath.Join(root, project.Name(), entry.Name()))
 			}
 		}

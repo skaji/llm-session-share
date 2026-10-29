@@ -7,6 +7,12 @@ import (
 )
 
 func TestResolvePath(t *testing.T) {
+	for _, suffix := range []string{".jsonl", ".jsonl.zst", ".JSONL.ZST"} {
+		t.Run(suffix, func(t *testing.T) { testResolvePath(t, suffix) })
+	}
+}
+
+func testResolvePath(t *testing.T, suffix string) {
 	home := t.TempDir()
 	t.Setenv("CODEX_HOME", home)
 	const id = "01a0de4a-2245-7102-b715-58d2ab09ea8f"
@@ -21,7 +27,7 @@ func TestResolvePath(t *testing.T) {
 	}
 	write := func(directory string) string {
 		t.Helper()
-		path := filepath.Join(home, directory, "2026", "09", "27", "rollout-2026-09-27T00-16-35-"+id+".jsonl")
+		path := filepath.Join(home, directory, "2026", "09", "27", "rollout-2026-09-27T00-16-35-"+id+suffix)
 		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
 			t.Fatal(err)
 		}
@@ -57,6 +63,12 @@ func TestResolvePath(t *testing.T) {
 }
 
 func TestResolveClaudePath(t *testing.T) {
+	for _, suffix := range []string{".jsonl", ".jsonl.zst", ".JSONL.ZST"} {
+		t.Run(suffix, func(t *testing.T) { testResolveClaudePath(t, suffix) })
+	}
+}
+
+func testResolveClaudePath(t *testing.T, suffix string) {
 	home := t.TempDir()
 	t.Setenv("CLAUDE_CONFIG_DIR", home)
 	const id = "01a0de4a-2245-7102-b715-58d2ab09ea8f"
@@ -66,7 +78,7 @@ func TestResolveClaudePath(t *testing.T) {
 			t.Fatalf("expected error: %s", input)
 		}
 	}
-	path := filepath.Join(home, "projects", "project", id+".jsonl")
+	path := filepath.Join(home, "projects", "project", id+suffix)
 	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
 		t.Fatal(err)
 	}
@@ -76,7 +88,7 @@ func TestResolveClaudePath(t *testing.T) {
 	if got, err := ResolvePath(link); err != nil || got != path {
 		t.Fatalf("got %q, %v", got, err)
 	}
-	other := filepath.Join(home, "projects", "other", id+".jsonl")
+	other := filepath.Join(home, "projects", "other", id+suffix)
 	if err := os.MkdirAll(filepath.Dir(other), 0o700); err != nil {
 		t.Fatal(err)
 	}

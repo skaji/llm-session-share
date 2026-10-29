@@ -1,11 +1,91 @@
 package session
 
 import (
+	"bytes"
+	"encoding/json"
+	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/klauspost/compress/zstd"
 )
 
 const testID = "01a0de0e-f326-7ec1-bc06-0aee7bbdf319"
+
+func TestCodexOpenPageContext(t *testing.T) {
+	const context = `<external_codex_apps_open_page>{"page_id":null}</external_codex_apps_open_page>`
+	for _, tc := range []struct {
+		name  string
+		texts []string
+		kinds []string
+		want  string
+	}{
+		{"metadata", []string{context}, []string{"additional_content.codex_apps_open_page"}, ""},
+		{"mixed content", []string{context, "question"}, []string{"additional_content.codex_apps_open_page", "user.text"}, "question"},
+		{"legacy", []string{context}, nil, ""},
+		{"legacy page ID", []string{`<external_codex_apps_open_page>{"page_id":"page-123"}</external_codex_apps_open_page>`}, nil, ""},
+		{"legacy mixed content", []string{context, "question"}, nil, "question"},
+		{"mismatched metadata", []string{context, "question"}, []string{"user.text"}, "question"},
+		{"explicit user content", []string{context}, []string{"user.text"}, context},
+		{"discussion", []string{"Please exclude " + context}, nil, "Please exclude " + context},
+		{"following conversation", []string{context + "\nquestion"}, nil, context + "\nquestion"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			content := make([]map[string]string, 0, len(tc.texts))
+			for _, text := range tc.texts {
+				content = append(content, map[string]string{"type": "input_text", "text": text})
+			}
+			payload := map[string]any{"role": "user", "content": content}
+			if tc.kinds != nil {
+				payload["internal_chat_message_metadata_passthrough"] = map[string]any{"content_item_kinds": tc.kinds}
+			}
+			line, err := json.Marshal(map[string]any{"type": "response_item", "payload": payload})
+			if err != nil {
+				t.Fatal(err)
+			}
+			snapshot, err := Read(bytes.NewReader(line), testID+".jsonl", "skaji", "auto")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if tc.want == "" {
+				if len(snapshot.Messages) != 0 {
+					t.Fatalf("unexpected messages: %+v", snapshot.Messages)
+				}
+			} else if len(snapshot.Messages) != 1 || snapshot.Messages[0].Text != tc.want {
+				t.Fatalf("messages=%+v; want %q", snapshot.Messages, tc.want)
+			}
+		})
+	}
+}
+
+func TestReadZstandard(t *testing.T) {
+	encoder, err := zstd.NewWriter(nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = encoder.Close() }()
+	for _, data := range []string{
+		`{"type":"session_meta","payload":{"id":"` + testID + `"}}` + "\n" + `{"role":"user","content":"Question"}` + "\n" + `{"role":"assistant","content":"Answer"}`,
+		`{"type":"user","sessionId":"` + testID + `","message":{"role":"user","content":"Question"}}` + "\n" + `{"type":"assistant","message":{"role":"assistant","content":"Answer"}}`,
+	} {
+		want, err := Read(strings.NewReader(data), testID+".jsonl", "skaji", "auto")
+		if err != nil {
+			t.Fatal(err)
+		}
+		compressed := encoder.EncodeAll([]byte(data), nil)
+		for _, suffix := range []string{".jsonl.zst", ".JSONL.ZST"} {
+			got, err := Read(bytes.NewReader(compressed), testID+suffix, "skaji", "auto")
+			if err != nil || !reflect.DeepEqual(got, want) {
+				t.Fatalf("%s: got %+v, %v; want %+v", suffix, got, err, want)
+			}
+		}
+		for _, invalid := range [][]byte{[]byte("invalid zstd"), compressed[:len(compressed)-1]} {
+			if _, err := Read(bytes.NewReader(invalid), testID+".jsonl.zst", "skaji", "auto"); err == nil {
+				t.Fatal("expected error for invalid compressed data")
+			}
+		}
+	}
+}
 
 func TestCodexConversation(t *testing.T) {
 	t.Parallel()
