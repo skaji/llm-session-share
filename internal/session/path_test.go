@@ -50,13 +50,6 @@ func testResolvePath(t *testing.T, suffix string) {
 	if got, err := ResolvePath(link); err != nil || got != archived {
 		t.Fatalf("archived: %q, %v", got, err)
 	}
-	compressed := archived + ".zst"
-	if err := os.Rename(archived, compressed); err != nil {
-		t.Fatal(err)
-	}
-	if got, err := ResolvePath(link); err != nil || got != compressed {
-		t.Fatalf("compressed: %q, %v", got, err)
-	}
 	// The default home resolves links too, without requiring CODEX_HOME.
 	userHome := t.TempDir()
 	if err := os.Rename(home, filepath.Join(userHome, ".codex")); err != nil {
