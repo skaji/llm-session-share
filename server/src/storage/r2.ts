@@ -1,4 +1,4 @@
-import type { Store } from './store.js';
+import type { Store } from "./store.js";
 
 export function r2Store(bucket: R2Bucket): Store {
   return {
@@ -11,7 +11,10 @@ export function r2Store(bucket: R2Bucket): Store {
     },
     async put(key, body) {
       await bucket.put(key, body, {
-        httpMetadata: { contentType: 'application/json', cacheControl: 'private, no-cache' },
+        httpMetadata: {
+          contentType: "application/json",
+          cacheControl: "private, no-cache",
+        },
       });
     },
   };

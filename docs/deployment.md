@@ -23,21 +23,21 @@ Use that URL with the CLI's `-server` option. Override the development port with
 `PORT=9000 npm run dev`. Stop the server with Ctrl-C;
 saved sessions remain on disk.
 
-| Environment | Storage | Run |
-| --- | --- | --- |
-| Local | `.data/llm-session-share/*.json` | `npm run dev` |
-| GCP | GCS | Cloud Run / Node.js |
-| Cloudflare | R2 binding | Workers |
+| Environment | Storage                          | Run                 |
+| ----------- | -------------------------------- | ------------------- |
+| Local       | `.data/llm-session-share/*.json` | `npm run dev`       |
+| GCP         | GCS                              | Cloud Run / Node.js |
+| Cloudflare  | R2 binding                       | Workers             |
 
 Node server settings:
 
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `STORAGE` | `local` | `local` or `gcs` |
-| `DATA_DIR` | `.data` | Local storage root |
-| `GCS_BUCKET` | None | Required with `STORAGE=gcs`; bucket name only |
-| `PORT` | `8789` with `npm run dev`; otherwise `8080` | Listening port |
-| `HOST` | `0.0.0.0` | Listening address |
+| Variable     | Default                                     | Purpose                                       |
+| ------------ | ------------------------------------------- | --------------------------------------------- |
+| `STORAGE`    | `local`                                     | `local` or `gcs`                              |
+| `DATA_DIR`   | `.data`                                     | Local storage root                            |
+| `GCS_BUCKET` | None                                        | Required with `STORAGE=gcs`; bucket name only |
+| `PORT`       | `8789` with `npm run dev`; otherwise `8080` | Listening port                                |
+| `HOST`       | `0.0.0.0`                                   | Listening address                             |
 
 ## GCP (primary deployment)
 
@@ -116,4 +116,3 @@ failed upload. Viewers log in through their browsers normally.
 For local Workers/R2 testing, `npm run worker:dev` uses Wrangler's local storage
 and does not need a deployed service. For a build check without deployment, run
 `npm run worker:check`.
-

@@ -58,10 +58,10 @@ Links resolve to files on **the PC running the CLI**; they do not download remot
 conversations. Missing or ambiguous matches produce an error, in which case
 specify the JSONL path directly.
 
-| Source | Local JSONL files | Link lookup root |
-| --- | --- | --- |
-| Codex | `sessions/YYYY/MM/DD/rollout-…-<uuid>.jsonl[.zst]` or `archived_sessions/…` | `$CODEX_HOME`, default `~/.codex` |
-| Claude Code | `projects/<project>/<uuid>.jsonl[.zst]` | `$CLAUDE_CONFIG_DIR`, default `~/.claude` |
+| Source      | Local JSONL files                                                           | Link lookup root                          |
+| ----------- | --------------------------------------------------------------------------- | ----------------------------------------- |
+| Codex       | `sessions/YYYY/MM/DD/rollout-…-<uuid>.jsonl[.zst]` or `archived_sessions/…` | `$CODEX_HOME`, default `~/.codex`         |
+| Claude Code | `projects/<project>/<uuid>.jsonl[.zst]`                                     | `$CLAUDE_CONFIG_DIR`, default `~/.claude` |
 
 Link lookup also recognizes `.jsonl.zst` files for both sources.
 
@@ -100,16 +100,16 @@ publish the session again, so stop it first.
 
 ## Options
 
-| Option | Default | Purpose |
-| --- | --- | --- |
-| `-server` | `LLM_SESSION_SHARE_URL` | Sharing server URL |
-| `-user` | `LLM_SESSION_SHARE_USER` | Your display name; required for uploads |
-| `-cloudflare-access` | `false` | Read your login token using `cloudflared` |
-| `-version` | — | Print version and exit; no session or server required |
-| `-once` | `false` | Upload once and exit |
-| `-delete` | `false` | Delete the server copy and exit |
-| `-source` | `auto` | Override format detection with `codex` or `claude` |
-| `-interval` | `1s` | Local file check and retry interval |
+| Option               | Default                  | Purpose                                               |
+| -------------------- | ------------------------ | ----------------------------------------------------- |
+| `-server`            | `LLM_SESSION_SHARE_URL`  | Sharing server URL                                    |
+| `-user`              | `LLM_SESSION_SHARE_USER` | Your display name; required for uploads               |
+| `-cloudflare-access` | `false`                  | Read your login token using `cloudflared`             |
+| `-version`           | —                        | Print version and exit; no session or server required |
+| `-once`              | `false`                  | Upload once and exit                                  |
+| `-delete`            | `false`                  | Delete the server copy and exit                       |
+| `-source`            | `auto`                   | Override format detection with `codex` or `claude`    |
+| `-interval`          | `1s`                     | Local file check and retry interval                   |
 
 ## Reading a conversation
 

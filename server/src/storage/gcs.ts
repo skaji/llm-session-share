@@ -1,5 +1,5 @@
-import { Storage } from '@google-cloud/storage';
-import type { Store } from './store.js';
+import { Storage } from "@google-cloud/storage";
+import type { Store } from "./store.js";
 
 export function gcsStore(bucketName: string): Store {
   const bucket = new Storage().bucket(bucketName);
@@ -19,7 +19,10 @@ export function gcsStore(bucketName: string): Store {
     async put(key, body) {
       await bucket.file(key).save(body, {
         resumable: false,
-        metadata: { contentType: 'application/json', cacheControl: 'private, no-cache' },
+        metadata: {
+          contentType: "application/json",
+          cacheControl: "private, no-cache",
+        },
       });
     },
   };

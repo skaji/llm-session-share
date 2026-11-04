@@ -1,5 +1,5 @@
-import { createApp } from './app.js';
-import { r2Store } from './storage/r2.js';
+import { createApp } from "./app.js";
+import { r2Store } from "./storage/r2.js";
 
 export default {
   fetch(request: Request, env: { BUCKET: R2Bucket }) {

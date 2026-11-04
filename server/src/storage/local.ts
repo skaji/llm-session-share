@@ -1,7 +1,7 @@
-import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
-import { randomUUID } from 'node:crypto';
-import type { Store } from './store.js';
+import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
+import { randomUUID } from "node:crypto";
+import type { Store } from "./store.js";
 
 export function localStore(directory: string): Store {
   return {
@@ -10,9 +10,9 @@ export function localStore(directory: string): Store {
     },
     async get(key) {
       try {
-        return await readFile(join(directory, key), 'utf8');
+        return await readFile(join(directory, key), "utf8");
       } catch (error) {
-        if ((error as NodeJS.ErrnoException).code === 'ENOENT') return null;
+        if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
         throw error;
       }
     },

@@ -64,7 +64,11 @@ Upload body:
   "name": "skaji",
   "title": "Explain this change",
   "messages": [
-    { "role": "user", "text": "Please explain this change.", "timestamp": "2026-09-27T00:00:00Z" },
+    {
+      "role": "user",
+      "text": "Please explain this change.",
+      "timestamp": "2026-09-27T00:00:00Z"
+    },
     { "role": "assistant", "text": "Here is what changed." }
   ]
 }
@@ -74,4 +78,3 @@ Upload body:
 `-user` value. The server adds
 `updated_at` on each successful upload. There is no sender heartbeat: "Last
 shared" describes the last upload, not whether the source PC is currently online.
-
