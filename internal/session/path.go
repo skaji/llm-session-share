@@ -2,14 +2,15 @@ package session
 
 import (
 	"fmt"
-	"io/fs"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
+
+	shared "github.com/skaji/llm-session-internal"
 )
 
-// ResolvePath accepts a JSONL or JSONL.zst path or a local Codex/Claude session link.
+// ResolvePath accepts a JSONL path or a local Codex/Claude session link.
 func ResolvePath(input string) (string, error) {
 	if strings.HasPrefix(input, "claude:") {
 		return resolveClaudePath(input)
@@ -30,27 +31,17 @@ func ResolvePath(input string) (string, error) {
 		}
 		home = filepath.Join(userHome, ".codex")
 	}
+	files, _, err := shared.Discover(shared.Codex, home)
+	if err != nil {
+		return "", fmt.Errorf("find Codex session: %w", err)
+	}
 	var matches []string
-	for _, directory := range []string{"sessions", "archived_sessions"} {
-		root := filepath.Join(home, directory)
-		err := filepath.WalkDir(root, func(path string, entry fs.DirEntry, err error) error {
-			if err != nil {
-				if path == root && os.IsNotExist(err) {
-					return nil
-				}
-				return err
-			}
-			name := strings.ToLower(entry.Name())
-			name = strings.TrimSuffix(name, ".zst")
-			if entry.Type().IsRegular() && strings.HasPrefix(name, "rollout-") && strings.HasSuffix(name, "-"+id+".jsonl") {
-				matches = append(matches, path)
-			}
-			return nil
-		})
-		if err != nil {
-			return "", fmt.Errorf("find Codex session: %w", err)
+	for _, file := range files {
+		if file.ID == id {
+			matches = append(matches, file.Path)
 		}
 	}
+
 	if len(matches) == 0 {
 		return "", fmt.Errorf("no local JSONL for Codex session %s under %s", id, home)
 	}
@@ -78,27 +69,39 @@ func resolveClaudePath(input string) (string, error) {
 		}
 		home = filepath.Join(userHome, ".claude")
 	}
+	files, _, err := shared.Discover(shared.Claude, home)
+	if err != nil {
+		return "", err
+	}
+	var matches []string
+	for _, file := range files {
+		if file.ID == strings.ToLower(id) {
+			matches = append(matches, file.Path)
+		}
+	}
+	// The shared discovery API currently handles uncompressed Claude sessions.
+	// Also recognize compressed sessions supported by the sharing CLI.
 	root := filepath.Join(home, "projects")
 	projects, err := os.ReadDir(root)
 	if err != nil && !os.IsNotExist(err) {
 		return "", err
 	}
-	var matches []string
 	for _, project := range projects {
 		if !project.IsDir() {
 			continue
 		}
-		entries, err := os.ReadDir(filepath.Join(root, project.Name()))
+		dir := filepath.Join(root, project.Name())
+		entries, err := os.ReadDir(dir)
 		if err != nil {
 			return "", err
 		}
 		for _, entry := range entries {
-			name := strings.TrimSuffix(strings.ToLower(entry.Name()), ".zst")
-			if entry.Type().IsRegular() && name == id+".jsonl" {
-				matches = append(matches, filepath.Join(root, project.Name(), entry.Name()))
+			if entry.Type().IsRegular() && strings.EqualFold(entry.Name(), id+".jsonl.zst") {
+				matches = append(matches, filepath.Join(dir, entry.Name()))
 			}
 		}
 	}
+
 	if len(matches) == 0 {
 		return "", fmt.Errorf("no local JSONL for Claude session %s under %s", id, home)
 	}

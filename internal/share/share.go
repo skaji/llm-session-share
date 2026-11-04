@@ -97,7 +97,7 @@ func Run(ctx context.Context, opts Options, stdout, stderr io.Writer) error {
 	for {
 		info, readErr := os.Stat(opts.Path)
 		if readErr == nil && (previous == nil || !os.SameFile(previous, info) || previous.Size() != info.Size() || !previous.ModTime().Equal(info.ModTime())) {
-			var file *os.File
+			var file io.ReadCloser
 			file, readErr = os.Open(opts.Path)
 			if readErr == nil {
 				snapshot, readErr = session.Read(file, opts.Path, strings.TrimSpace(opts.Name), opts.Source)

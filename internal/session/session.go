@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/klauspost/compress/zstd"
+	shared "github.com/skaji/llm-session-internal"
 )
 
 type Message struct {
@@ -33,14 +33,12 @@ var uuidPattern = regexp.MustCompile(`(?i)[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0
 // is retried on the next read. Unknown records are ignored, just as in search.
 func Read(reader io.Reader, path, name, source string) (Session, error) {
 	result := Session{Name: name, Source: source, Messages: []Message{}}
-	if strings.HasSuffix(strings.ToLower(path), ".jsonl.zst") {
-		decoder, err := zstd.NewReader(reader, zstd.WithDecoderConcurrency(1))
-		if err != nil {
-			return result, err
-		}
-		defer decoder.Close()
-		reader = decoder
+	decoded, err := shared.Decode(reader, path)
+	if err != nil {
+		return result, err
 	}
+	defer func() { _ = decoded.Close() }()
+	reader = decoded
 	result.ID = strings.ToLower(uuidPattern.FindString(filepath.Base(path)))
 	if result.Source == "auto" {
 		result.Source = ""
@@ -74,30 +72,12 @@ func Read(reader io.Reader, path, name, source string) (Session, error) {
 			if result.Source == "" && (root["type"] == "custom-title" || root["type"] == "ai-title") {
 				result.Source = "claude"
 			}
-			var text, role string
-			switch result.Source {
-			case "codex":
-				sanitizeCodexInjectedContext(root)
-				text, role = codexConversationText(root)
-			case "claude":
-				var title string
-				switch root["type"] {
-				case "custom-title":
-					title, _ = root["customTitle"].(string)
-				case "ai-title":
-					if result.Title == "" {
-						title, _ = root["aiTitle"].(string)
-					}
-				}
-				if title = strings.TrimSpace(title); title != "" {
-					result.Title = title
-				}
-				message, _ := root["message"].(map[string]any)
-				role, _ = message["role"].(string)
-				if (role == "user" || role == "assistant") && root["type"] == role {
-					text = claudeConversationText(message["content"])
-				}
+			record := shared.Extract(result.Source, line)
+			text, role := record.Text, record.Role
+			if record.Title != "" && (record.ForceTitle || result.Title == "") {
+				result.Title = record.Title
 			}
+
 			if text != "" && (role == "user" || role == "assistant") {
 				timestamp, _ := root["timestamp"].(string)
 				result.Messages = append(result.Messages, Message{Role: role, Text: text, Timestamp: timestamp})
@@ -120,9 +100,5 @@ func Read(reader io.Reader, path, name, source string) (Session, error) {
 }
 
 func validID(id string) bool {
-	return len(id) == 36 && uuidPattern.FindString(id) == id
-}
-
-func isBase64DataURL(value string) bool {
-	return strings.HasPrefix(value, "data:") && strings.Contains(value[:min(len(value), 128)], ";base64,")
+	return shared.ValidID(id)
 }

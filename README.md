@@ -60,7 +60,7 @@ specify the JSONL path directly.
 
 | Source | Local JSONL files | Link lookup root |
 | --- | --- | --- |
-| Codex | `sessions/YYYY/MM/DD/rollout-…-<uuid>.jsonl` or `archived_sessions/…` | `$CODEX_HOME`, default `~/.codex` |
+| Codex | `sessions/YYYY/MM/DD/rollout-…-<uuid>.jsonl[.zst]` or `archived_sessions/…` | `$CODEX_HOME`, default `~/.codex` |
 | Claude Code | `projects/<project>/<uuid>.jsonl` | `$CLAUDE_CONFIG_DIR`, default `~/.claude` |
 
 Link lookup also recognizes `.jsonl.zst` files for both sources.
